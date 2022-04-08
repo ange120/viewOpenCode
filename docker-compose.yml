@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+    app:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+        container_name: app
+        image: 'laravelapp'
+        ports:
+            - 8080:80
+        volumes:
+            - ./:/var/www/html
+    mysql:
+        image: mysql:5.7
+        container_name: mysql
+        restart: always
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: 'laraapp_db'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            MYSQL_ROOT_PASSWORD: "secret"
+        volumes:
+            - ./db:/var/lib/mysql
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: always
+        depends_on:
+            - mysql
+        ports:
+            - "8081:80"
+        links:
+            - mysql
